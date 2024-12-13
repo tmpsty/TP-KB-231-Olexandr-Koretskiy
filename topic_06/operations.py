@@ -1,11 +1,5 @@
-import os
 from functions import add, subtract, multiply, divide
-
-# Функція для запису логів у файл
-def log_action(action, details):
-    log_file = os.path.join("log.txt")  # Лог-файл буде створено в поточній папці (topic_06)
-    with open(log_file, "a") as file:
-        file.write(f"{action}: {details}\n")
+from log import log_action
 
 def get_numbers():
     while True:

@@ -1,16 +1,10 @@
-import os
 from operations import perform_operation
+from log import log_action
 
-# Функція для запису логів у файл
-def log_action(action, details):
-    log_file = os.path.join("log.txt")  # Лог-файл буде створено в поточній папці (topic_06)
-    with open(log_file, "a") as file:
-        file.write(f"{action}: {details}\n")
 
 def main():
     print("Calculator")
     print("Operation: +, -, *, /")
-    
     while True:
         operation = input("Enter operation (+, -, *, /) or 'exit' to quit: ").strip()
         if operation.lower() == "exit":

@@ -1,0 +1,9 @@
+Program Termination: User exited the program.
+Error: Operation: /, Error: You can't divide by zero!
+Error: Operation: fgsf, Error: Unknown operation!
+Program Termination: User exited the program.
+Input: First number: 124.0, Second number: 0.0
+Error: Operation: /, Error: You can't divide by zero!
+Input: First number: 14.0, Second number: 41.0
+Error: Operation: fgsg, Error: Unknown operation!
+Program Termination: User exited the program.
