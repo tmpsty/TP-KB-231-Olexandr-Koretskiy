@@ -1,102 +1,147 @@
 import csv
-import sys
+from sys import argv
 
-DEFAULT_FILE = "students_directory.csv"
+DEF_NAME = "TP-KB-231-Olexandr-Koretskiy\lab_02\lab2.csv"
 
 students = []
 
-def display_students():
+def printAllList():
     if not students:
-        print("The student directory is currently empty.")
+        print("The list of students is empty")
+        return
+    for elem in students:
+        strForPrint = "Student name is " + elem["name"] + ", Phone is " + elem["phone"] + ", Group is " + elem["group"] + ", Email is " + elem["email"]
+        print(strForPrint)
+    return
+
+def addNewElement():
+    name = input("Please enter student name: ") or "Unknown"
+    phone = input("Please enter student phone: ") or "Unknown"
+    group = input("Please enter student group: ") or "Unknown"
+    email = input("Please enter student email: ") or "Unknown"
+    newItem = {"name": name, "phone": phone, "group": group, "email": email}
+    insertPosition = 0
+    for item in students:
+        if name > item["name"]:
+            insertPosition += 1
+        else:
+            break
+    students.insert(insertPosition, newItem)
+    print("New element has been added")
+    return
+
+def deleteElement():
+    name = input("Please enter name to be deleted: ")
+    deletePosition = -1
+    for item in students:
+        if name == item["name"]:
+            deletePosition = students.index(item)
+            break
+    if deletePosition == -1:
+        print("Element was not found")
     else:
-        for student in students:
-            print(f"Name: {student['name']}, Phone: {student['phone']}, Email: {student['email']}, Address: {student['address']}")
-    print()
+        print("Delete position " + str(deletePosition))
+        del students[deletePosition]
+    return
 
-def add_student():
-    name = input("Enter student's name: ").strip()
-    phone = input("Enter student's phone number: ").strip()
-    email = input("Enter student's email: ").strip()
-    address = input("Enter student's address: ").strip()
+def updateElement():
+    name = input("Please enter name to be updated: ")
+    updatePosition = -1
+    for item in students:
+        if name == item["name"]:
+            updatePosition = students.index(item)
+            break
+    if updatePosition == -1:
+        print("Student not found")
+    else:
+        name1 = students[updatePosition]["name"]
+        phone1 = students[updatePosition]["phone"]
+        group1 = students[updatePosition]["group"]
+        email1 = students[updatePosition]["email"]
 
-    student_data = {"name": name, "phone": phone, "email": email, "address": address}
+        curinf = f"Student current information: name — {name1}, phone — {phone1}, group — {group1}, email — {email1}"
+        print(curinf)
 
-    position = next((i for i, student in enumerate(students) if name < student["name"]), len(students))
-    students.insert(position, student_data)
+        name = input("Enter new name or press Enter to skip:") or name1
+        phone = input("Enter new phone or press Enter to skip:") or phone1
+        group = input("Enter new group or press Enter to skip:") or group1
+        email = input("Enter new email or press Enter to skip:") or email1
+        
+        if name == name1 and phone == phone1 and group == group1 and email == email1:
+            print("You haven't updated student information")
+        elif name == name1:
+            students[updatePosition]["phone"] = phone
+            students[updatePosition]["group"] = group
+            students[updatePosition]["email"] = email
+        else:
+            updatedItem = {"name": name, "phone": phone, "group": group, "email": email}
+            del students[updatePosition]
+            insertPosition = 0
+            for item in students:
+                if name > item["name"]:
+                    insertPosition += 1
 
-    print(f"Student '{name}' has been added.\n")
+            students.insert(insertPosition, updatedItem)
+        print("Information has been updated")
+    return
 
-def remove_student():
-    name_to_remove = input("Enter the name of the student to remove: ").strip()
-    for i, student in enumerate(students):
-        if student["name"] == name_to_remove:
-            del students[i]
-            print(f"Student '{name_to_remove}' has been removed.\n")
-            return
-    print(f"Student '{name_to_remove}' not found.\n")
-
-def modify_student():
-    name_to_modify = input("Enter the name of the student to update: ").strip()
-    for i, student in enumerate(students):
-        if student["name"] == name_to_modify:
-            new_name = input(f"New name (current: {student['name']}): ").strip() or student["name"]
-            new_phone = input(f"New phone (current: {student['phone']}): ").strip() or student["phone"]
-            new_email = input(f"New email (current: {student['email']}): ").strip() or student["email"]
-            new_address = input(f"New address (current: {student['address']}): ").strip() or student["address"]
-
-            students.pop(i)
-            updated_student = {"name": new_name, "phone": new_phone, "email": new_email, "address": new_address}
-            position = next((j for j, s in enumerate(students) if new_name < s["name"]), len(students))
-            students.insert(position, updated_student)
-
-            print(f"Student '{name_to_modify}' has been updated.\n")
-            return
-    print(f"Student '{name_to_modify}' not found.\n")
-
-def load_data(file_name):
-    global students
+def import_data(file_name):
     try:
-        with open(file_name, mode='r', encoding='utf-8') as file:
-            csv_reader = csv.DictReader(file)
-            students = [row for row in csv_reader]
-        print(f"Data loaded from '{file_name}'.\n")
+        with open(file_name, 'r', encoding='utf-8') as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                students.append({
+                    "name": row.get("name", "Unknown"), 
+                    "phone": row.get("phone", "Unknown"), 
+                    "group": row.get("group", "Unknown"), 
+                    "email": row.get("email", "Unknown")
+                })
     except FileNotFoundError:
-        print(f"File '{file_name}' not found. Starting with an empty directory.\n")
-        students = []
+        print(f"File '{file_name}' not found. The initial list will be empty.")
+    except Exception as e:
+        print(f"File loading error: {e}")
 
 def save_data(file_name):
     try:
-        with open(file_name, mode='w', encoding='utf-8', newline='') as file:
-            csv_writer = csv.DictWriter(file, fieldnames=["name", "phone", "email", "address"])
-            csv_writer.writeheader()
-            csv_writer.writerows(students)
-        print(f"Data saved to '{file_name}'.\n")
+        with open(file_name, 'w', encoding='utf-8', newline='') as file:
+            fieldnames = ["name", "phone", "group", "email"]
+            writer = csv.DictWriter(file, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(students)
+        print(f"Data successfully saved to '{file_name}'")
     except Exception as e:
-        print(f"Error saving data: {e}\n")
+        print(f"File saving error: {e}")
 
-def main_menu():
-    file_name = DEFAULT_FILE
-    if len(sys.argv) > 1:
-        file_name = sys.argv[1]
-
-    load_data(file_name)
+def main():
+    if len(argv) == 1:
+        data_file = DEF_NAME
+    else:
+        data_file = argv[1]
+    
+    print(f"File used: '{data_file}'")
+    import_data(data_file)
 
     while True:
-        action = input("Choose an action: [A add, U update, R remove, D display, Q quit]: ").strip().lower()
-        if action == "a":
-            add_student()
-        elif action == "u":
-            modify_student()
-        elif action == "r":
-            remove_student()
-        elif action == "d":
-            display_students()
-        elif action == "q":
-            save_data(file_name)
-            print("Exiting the program. Goodbye!")
-            break
-        else:
-            print("Invalid choice. Please try again.\n")
-    
+        choice = input("Please specify the action [ C create, U update, D delete, P print, X exit ] ")
+        match choice:
+            case "C" | "c":
+                print("New element will be created:")
+                addNewElement()
+            case "U" | "u":
+                print("Existing element will be updated")
+                updateElement()
+            case "D" | "d":
+                print("Element will be deleted")
+                deleteElement()
+            case "P" | "p":
+                print("List will be printed")
+                printAllList()
+            case "X" | "x":
+                save_data(data_file)
+                print("Exit()")
+                break
+            case _:
+                print("Wrong choice")
+
 if __name__ == "__main__":
-    main_menu()
+    main()

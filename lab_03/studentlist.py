@@ -1,40 +1,52 @@
-from Student import Student
+class StudentList:
+    def __init__(self, students=None):
+        if students is None:
+            students = []
+        self.students = students
 
-class StudentRegistry:
-    def __init__(self):
-        self._records = []
+    def addNewElement(self, student_add):
+        insert_position = 0
+        for item in self.students:
+            if student_add.name > item.name:
+                insert_position += 1
+            else:
+                break
+        self.students.insert(insert_position, student_add)
+        print("New element has been added")
 
-    def add(self, student):
-        """Додає нового студента та сортує список за іменем."""
-        self._records.append(student)
-        self._records.sort(key=lambda s: s.name)
+    def findElement(self, name):
+        for index, item in enumerate(self.students):
+            if item.name == name:
+                return index
+        return -1
 
-    def remove(self, student_name):
-        """Видаляє студента за ім’ям."""
-        for record in self._records:
-            if record.name == student_name:
-                self._records.remove(record)
-                print(f"Student '{student_name}' has been removed.")
-                return
-        print(f"Student '{student_name}' not found.")
-
-    def modify(self, student_name, name=None, phone=None, email=None, address=None):
-        """Оновлює дані студента за його ім’ям."""
-        for record in self._records:
-            if record.name == student_name:
-                record.modify(name=name, phone=phone, email=email, address=address)
-                print(f"Student '{student_name}' has been updated.")
-                return
-        print(f"Student '{student_name}' not found.")
-
-    def show_all(self):
-        """Виводить усіх студентів."""
-        if not self._records:
-            print("The registry is empty.")
+    def deleteElement(self, name):
+        index_delete = self.findElement(name)
+        if index_delete != -1:
+            self.students.pop(index_delete)  # Удаляем студента, если нашли
+            print("The student was deleted")
         else:
-            for record in self._records:
-                print(record.details())
+            print("Element was not found")
 
-    def find(self, student_name):
-        """Пошук студента за ім’ям."""
-        return next((record for record in self._records if record.name == student_name), None)
+    def updateElement(self, index, new_data):
+        if 0 <= index < len(self.students):
+            current = self.students[index]
+            if (
+                current.name == new_data.name
+                and current.phone == new_data.phone
+                and current.group == new_data.group
+                and current.email == new_data.email
+            ):
+                print("You haven't updated student information")
+            else:
+                self.students[index] = new_data
+                print("Information has been updated")
+        else:
+            print("Invalid index")
+
+    def printAllList(self):
+        if not self.students:
+            print("The list of students is empty.")
+        else:
+            for student in self.students:
+                print(student)

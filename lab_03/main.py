@@ -1,70 +1,48 @@
-from StudentList import StudentList 
-from FileUtils import FileUtils 
 from Student import Student
+from StudentList import StudentList
+from Utils import FileInOut
 
-def display_menu():
-    print("\nAvailable actions:")
-    print("[1] Add a new student")
-    print("[2] Update an existing student")
-    print("[3] Delete a student")
-    print("[4] Display all students")
-    print("[5] Exit")
-    return input("Choose an option: ").strip()
-
-def handle_create(student_list):
-    print("\n--- Add New Student ---")
-    name = input("Enter student name: ").strip()
-    phone = input("Enter student phone: ").strip()
-    email = input("Enter student email: ").strip()
-    address = input("Enter student address: ").strip()
-    new_student = Student(name, phone, email, address)
-    student_list.add_student(new_student)
-    print("Student successfully added.")
-
-def handle_update(student_list):
-    print("\n--- Update Student ---")
-    current_name = input("Enter the name of the student to update: ").strip()
-    print("Enter new details (press Enter to keep current value):")
-    updated_name = input("New name: ").strip() or None
-    updated_phone = input("New phone: ").strip() or None
-    updated_email = input("New email: ").strip() or None
-    updated_address = input("New address: ").strip() or None
-    student_list.update_student(current_name, updated_name, updated_phone, updated_email, updated_address)
-    print("Student details updated.")
-
-def handle_delete(student_list):
-    print("\n--- Delete Student ---")
-    name = input("Enter the name of the student to delete: ").strip()
-    student_list.delete_student(name)
-    print(f"Student '{name}' removed, if they existed.")
-
-def handle_print(student_list):
-    print("\n--- Student Directory ---")
-    student_list.print_all()
+DEF_NAME = r"TP-KB-231-Olexandr-Koretskiy\lab_03\lab3.csv"
 
 def main():
-    student_list = StudentList()
-    file_path = "students_directory.csv"
-
-    FileUtils.load_from_csv(file_path, student_list)
-    print("Welcome to the Student Management System!")
+    file_io = FileInOut()
+    student_list = StudentList(file_io.import_data(DEF_NAME))
 
     while True:
-        action = display_menu()
-        if action == "1":
-            handle_create(student_list)
-        elif action == "2":
-            handle_update(student_list)
-        elif action == "3":
-            handle_delete(student_list)
-        elif action == "4":
-            handle_print(student_list)
-        elif action == "5":
-            FileUtils.save_to_csv(file_path, student_list)
-            print("Data saved. Goodbye!")
-            break
-        else:
-            print("Invalid option. Please try again.")
+        choice = input("Please specify the action [ C create, U update, D delete, P print, X exit ]: ")
+        match choice:
+            case "C" | "c":
+                name = input("Enter name: ") or "Unknown"
+                phone = input("Enter phone: ") or "Unknown"
+                group = input("Enter group: ") or "Unknown"
+                email = input("Enter email: ") or "Unknown"
+                student = Student(name=name, phone=phone, group=group, email=email)
+                student_list.addNewElement(student)
+            case "U" | "u":
+                name = input("Enter name to update: ")
+                index = student_list.findElement(name)
+                if index == -1:
+                    print("Student not found")
+                    continue
+                current = student_list.students[index]
+                print(f"Current: {current}")
+                new_name = input("Enter new name (or press Enter to skip): ") or current.name
+                new_phone = input("Enter new phone (or press Enter to skip): ") or current.phone
+                new_group = input("Enter new group (or press Enter to skip): ") or current.group
+                new_email = input("Enter new email (or press Enter to skip): ") or current.email
+                updated_student = Student(new_name, new_phone, new_group, new_email)
+                student_list.updateElement(index, updated_student)
+            case "D" | "d":
+                name = input("Enter name to delete: ")
+                student_list.deleteElement(name)
+            case "P" | "p":
+                student_list.printAllList()
+            case "X" | "x":
+                file_io.save_data(DEF_NAME, student_list.students)
+                print("Exiting program.")
+                break
+            case _:
+                print("Invalid choice.")
 
 if __name__ == "__main__":
     main()
