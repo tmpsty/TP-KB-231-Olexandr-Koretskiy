@@ -1,7 +1,7 @@
-actions = ["(", "+", "-", "*", "/", "^", ")"]
+act = ["(", "+", "-", "*", "/", "^", ")"]
 
-def get_priority(operator):
-    match actions.index(operator):
+def priority(action):
+    match act.index(action):
         case 0:
             return 0
         case 1 | 2:
@@ -11,65 +11,63 @@ def get_priority(operator):
         case 5:
             return 3
 
-def to_rpn(expression):
-
-    tokens = expression.split()
+def Stage1(expression):
+    exp_elem = expression.split()
     stack = []
-    rpn_expression = []
+    S1exp = []
+    for elem in exp_elem: 
+        if elem in act:
+            if elem == act[0]:
+                stack.append(elem)
 
-    for token in tokens:
-        if token in actions:
-            if token == actions[0]:  
-                stack.append(token)
+            elif elem == act[6]:
+                while stack[-1] != act[0]:
+                    S1exp.append(stack.pop(-1))
+                stack.pop(-1)
 
-            elif token == actions[6]:  
-                while stack and stack[-1] != actions[0]:
-                    rpn_expression.append(stack.pop())
-                stack.pop()
-
-            elif stack and get_priority(stack[-1]) >= get_priority(token):
-                rpn_expression.append(stack.pop())
-                stack.append(token)
+            elif len(stack) != 0 and priority(stack[-1]) >= priority(elem):
+                S1exp.append(stack.pop(-1))
+                stack.append(elem)
 
             else:
-                stack.append(token)
+                stack.append(elem)
         else:
-            rpn_expression.append(token)
+            S1exp.append(elem)
 
-    rpn_expression.extend(reversed(stack))
-    return rpn_expression
+    S1exp.extend(stack[::-1])
+    return S1exp
+    
 
-def evaluate_rpn(rpn):
-   
-    stack = []
-
-    for token in rpn:
-        if token in actions:
-            a = float(stack.pop())
-            b = float(stack.pop())
-            match token:
+def Stage2(RPN):
+    ans_list = []
+    for elem in RPN:
+        if elem in act:
+            a = float(ans_list.pop(-1))
+            b = float(ans_list.pop(-1))
+            match elem:
                 case "+":
-                    stack.append(b + a)
+                    ans_list.append(b + a)
                 case "-":
-                    stack.append(b - a)
+                    ans_list.append(b - a)
                 case "*":
-                    stack.append(b * a)
+                    ans_list.append(b * a)
                 case "/":
-                    stack.append(b / a)
+                    ans_list.append(b / a)
                 case "^":
-                    stack.append(b ** a)
+                    ans_list.append(b ** a)
         else:
-            stack.append(token)
-
-    return stack[0]
+            ans_list.append(elem)
+    return ans_list[0]
 
 if __name__ == "__main__":
-    expression = input("Enter your expression: ")
-    print(f"Default sequence: {expression}")
+    def_str = input("Enter your expression: ")
+    print(f"Default sequence: {def_str}")
 
-    rpn_sequence = to_rpn(expression)
-    rpn_string = " ".join(rpn_sequence)
-    print(f"Reverse Polish notation: {rpn_string}")
-
-    result = evaluate_rpn(rpn_sequence)
-    print(f"Answer: {result}")
+    S1sequence = Stage1(def_str)
+    RPN_str = ""
+    for elem in S1sequence:
+        RPN_str += f"{elem} "
+    print(f"Reverse Polish notation: {RPN_str}")
+    
+    ans = Stage2(S1sequence)
+    print(f"Answer: {ans}")
