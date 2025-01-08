@@ -1,23 +1,23 @@
-#sorted list of Students
+# sorted list
 list = [
-    {"name":"Bob", "phone":"0631234567", "years":"15", "email":"bob@exmp.com"},
-    {"name":"Emma", "phone":"0631234567", "years":"17", "email":"emma@exmp.com"},
-    {"name":"Jon",  "phone":"0631234567", "years":"22", "email":"jon@exmp.com"},
-    {"name":"Zak",  "phone":"0631234567", "years":"19", "email":"zak@exmp.com"}
+    {"name": "Bob", "phone": "0631234567", "group": "KB-231", "email": "bob@example.com"},
+    {"name": "Emma", "phone": "0631234567", "group": "KB-233", "email": "emma@example.com"},
+    {"name": "Jon", "phone": "0631234567", "group": "KB-234", "email": "jon@example.com"},
+    {"name": "Zak", "phone": "0631234567", "group": "KB-232", "email": "zak@example.com"}
 ]
 
 def printAllList():
     for elem in list:
-        strForPrint = "Student name is " + elem["name"] + ",  Phone is " + elem["phone"] + ", Age is " + elem["age"] + ", Email is " + elem["email"]
+        strForPrint = "Student name is " + elem["name"] + ", Phone is " + elem["phone"] + ", Group is " + elem["group"] + ", Email is " + elem["email"]
         print(strForPrint)
     return
 
 def addNewElement():
-    name = input("Please enter student name: ")
+    name = input("Pease enter student name: ")
     phone = input("Please enter student phone: ")
-    age = input("Please enter student age: ")
+    group = input("Pease enter student group: ")
     email = input("Please enter student email: ")
-    newItem = {"name": name, "phone": phone, "age": age, "email": email}
+    newItem = {"name": name, "phone": phone, "group": group, "email": email}
     # find insert position
     insertPosition = 0
     for item in list:
@@ -30,7 +30,7 @@ def addNewElement():
     return
 
 def deleteElement():
-    name = input("Please enter name to be delated: ")
+    name = input("Please enter name to be deleted: ")
     deletePosition = -1
     for item in list:
         if name == item["name"]:
@@ -39,50 +39,55 @@ def deleteElement():
     if deletePosition == -1:
         print("Element was not found")
     else:
-        print("Dele position " + str(deletePosition))
-        # list.pop(deletePosition)
+        print("Delete position " + str(deletePosition))
         del list[deletePosition]
     return
 
-
 def updateElement():
     name = input("Please enter name to be updated: ")
-    insertPosition = -1
+    updatePosition = -1
     for item in list:
         if name == item["name"]:
-            insertPosition = list.index(item)
+            updatePosition = list.index(item)
             break
-    if insertPosition == -1:
-        print("Name not found")
+    if updatePosition == -1:
+        print("Student not found")
     else:
-        oldname = list[insertPosition]["name"]
-        oldphone = list[insertPosition]["phone"]
-        oldage = list[insertPosition]["age"]
-        oldemail = list[insertPosition]["email"]
+        name1 = list[updatePosition]["name"]
+        phone1 = list[updatePosition]["phone"]
+        group1 = list[updatePosition]["group"]
+        email1 = list[updatePosition]["email"]
 
-        strForPrint = "Student name is " + oldname + ",  Phone is " + oldphone + ", Age is " + oldage + ", Email is " + oldemail
-        print(strForPrint)
+        curinf = f"Student current information: name — {name1}, phone — {phone1}, group — {group1}, email — {email1}"
+        print(curinf)
 
-        newname = input("Please enter student name or skip: ") or oldname
-        newphone = input("Please enter student phone or skip: ") or oldphone
-        newage = input("Please enter student age or skip: ") or oldage
-        newemail = input("Please enter student email or skip: ") or oldemail
+        name = input("Enter new name or press Enter to skip:") or name1
+        phone = input("Enter new phone or press Enter to skip:") or phone1
+        group = input("Enter new group or press Enter to skip:") or group1
+        email = input("Enter new email or press Enter to skip:") or email1
+        
+        if name == name1 and phone == phone1 and group == group1 and email == email1:
+            print("You haven't updated student information")
+        elif name == name1:
+            list[updatePosition]["phone"] = phone
+            list[updatePosition]["group"] = group
+            list[updatePosition]["email"] = email
+        else:
+            updatedItem = {"name": name, "phone": phone, "group": group, "email": email}
+            del list[updatePosition]
+            insertPosition = 0
+            for item in list:
+                if name > item["name"]:
+                    insertPosition += 1
 
-        updateElement = {"name":newname, "phone":newphone, "age":newage, "email":newemail}
-        del list[insertPosition]
-        updatePosition = 0
-        for item in list:
-            if newname > item["name"]:
-                updatePosition += 1
-        list.insert(updatePosition, updateElement)
-        print("New information has been added")
+            list.insert(insertPosition, updatedItem)
+        print("Information has been updated")
     return
-    # implementation required
 
 def main():
     while True:
-        chouse = input("Please specify the action [ C create, U update, D delete, P print,  X exit ] ")
-        match chouse:
+        choice = input("Please specify the action [ C create, U update, D delete, P print, X exit ] ")
+        match choice:
             case "C" | "c":
                 print("New element will be created:")
                 addNewElement()
@@ -100,7 +105,6 @@ def main():
                 print("Exit()")
                 break
             case _:
-                print("Wrong chouse")
-
+                print("Wrong choice")
 
 main()
