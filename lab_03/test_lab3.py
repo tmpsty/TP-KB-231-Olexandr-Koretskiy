@@ -40,11 +40,9 @@ class TestStudentSystem(unittest.TestCase):
         student = Student(name="Test", phone="0661234567", group="KB-231", email="test@example.com")
         self.student_list.addNewElement(student)
 
-        # Удаляем существующего студента
         self.student_list.deleteElement("Test")
         self.assertEqual(len(self.student_list.students), 0)
 
-        # Удаляем несуществующего студента
         self.student_list.deleteElement("NonExistent")
         self.assertEqual(len(self.student_list.students), 0)
 
@@ -60,7 +58,6 @@ class TestStudentSystem(unittest.TestCase):
         self.assertEqual(self.student_list.students[0].group, "KB-232")
         self.assertEqual(self.student_list.students[0].email, "updated@example.com")
 
-        # Обновление с теми же данными (изменений быть не должно)
         self.student_list.updateElement(0, updated_student)
         self.assertEqual(len(self.student_list.students), 1)
         self.assertEqual(self.student_list.students[0].name, "Test")
