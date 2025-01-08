@@ -23,7 +23,7 @@ class StudentList:
     def deleteElement(self, name):
         index_delete = self.findElement(name)
         if index_delete != -1:
-            self.students.pop(index_delete)  # Удаляем студента, если нашли
+            self.students.pop(index_delete) 
             print("The student was deleted")
         else:
             print("Element was not found")
